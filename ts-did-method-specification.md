@@ -74,7 +74,7 @@ As users already have HD wallet accounts, just make use of them.
 use first address of first account as method-specific-id.
 e.g.
 ```bash
-curl -XPOST -d '{"payload":{"did":"did:theseries:0x9858EfFD232B4033E47d90003D41EC34EcaEda94","pubKeys":[{"id":"#keys-1","type":"Secp256k1","publicKeyHex":"37b0bb7a8288d38ed49a524b5dc98cff3eb5ca824c9f9dc0dfdb3d9cd600f299a6179912b7451c09896c4098eca7ce6b2e58330672795e847c4d6af44e024230"},{"id":"#keys-2","type":"Secp256k1","publicKeyHex":"9fd0991d0222b4e1339c1a1a5b5f6d9f6a96672a3247b638ee6156d9ea877a2f1735e3a9260940e4c2225c344a8cea6c7b6a6057d0eb90a9a875f446c131031d"}]},"signature":"1c0aa855f69932fee4a68fddcf689f9c543180db0288402fef50bb903f0ae5f9b5665b67c2272287637354b7d08256f7079bf04c538a49a327f856e90cf0cd6e9b"}' https://tsdv.thelog.net/did/v1/register
+curl -XPOST -H "Content-Type: application/json" -d '{"payload":{"did":"did:theseries:0x9858EfFD232B4033E47d90003D41EC34EcaEda94","pubKeys":[{"id":"#keys-1","type":"Secp256k1","publicKeyHex":"37b0bb7a8288d38ed49a524b5dc98cff3eb5ca824c9f9dc0dfdb3d9cd600f299a6179912b7451c09896c4098eca7ce6b2e58330672795e847c4d6af44e024230"},{"id":"#keys-2","type":"Secp256k1","publicKeyHex":"9fd0991d0222b4e1339c1a1a5b5f6d9f6a96672a3247b638ee6156d9ea877a2f1735e3a9260940e4c2225c344a8cea6c7b6a6057d0eb90a9a875f446c131031d"}]},"signature":"1c0aa855f69932fee4a68fddcf689f9c543180db0288402fef50bb903f0ae5f9b5665b67c2272287637354b7d08256f7079bf04c538a49a327f856e90cf0cd6e9b"}' https://tsdv.thelog.net/did/v1/register
 ```
 
 example response
@@ -104,7 +104,7 @@ Hex":"9fd0991d0222b4e1339c1a1a5b5f6d9f6a96672a3247b638ee6156d9ea877a2f1735e3a926
 ### Update
  Use recovery key to update service info.
 ```
-curl -XPUT -d '{"payload":{"did":"did:theseries:0x9858EfFD232B4033E47d90003D41EC34EcaEda94","pubKeys":[{"id":"#keys-1","type":"Secp256k1","publicKeyHex":"37b0bb7a8288d38ed49a524b5dc98cff3eb5ca824c9f9dc0dfdb3d9cd600f299a6179912b7451c09896c4098eca7ce6b2e58330672795e847c4d6af44e024230"},{"id":"#keys-2","type":"Secp256k1","publicKeyHex":"9fd0991d0222b4e1339c1a1a5b5f6d9f6a96672a3247b638ee6156d9ea877a2f1735e3a9260940e4c2225c344a8cea6c7b6a6057d0eb90a9a875f446c131031d"}],"service":[]},"signature":"1c7796870181c61950486b249a40fec2c00de28fa8aac835bc8bd9055eab579e252d26d981a6f03cad47da55e52b0abf84119ab248dbe17eee9e18ae3175388325"}' https://tsdv.thelog.net/did/v1/update
+curl -XPUT -H "Content-Type: application/json" -d '{"payload":{"did":"did:theseries:0x9858EfFD232B4033E47d90003D41EC34EcaEda94","pubKeys":[{"id":"#keys-1","type":"Secp256k1","publicKeyHex":"37b0bb7a8288d38ed49a524b5dc98cff3eb5ca824c9f9dc0dfdb3d9cd600f299a6179912b7451c09896c4098eca7ce6b2e58330672795e847c4d6af44e024230"},{"id":"#keys-2","type":"Secp256k1","publicKeyHex":"9fd0991d0222b4e1339c1a1a5b5f6d9f6a96672a3247b638ee6156d9ea877a2f1735e3a9260940e4c2225c344a8cea6c7b6a6057d0eb90a9a875f446c131031d"}],"service":[]},"signature":"1c7796870181c61950486b249a40fec2c00de28fa8aac835bc8bd9055eab579e252d26d981a6f03cad47da55e52b0abf84119ab248dbe17eee9e18ae3175388325"}' https://tsdv.thelog.net/did/v1/update
 ```
 
 example response
@@ -119,7 +119,7 @@ example response
 ### Delete(Revoke)
  Use recovery key to revoke a did.
 ```
-curl -XDELETE -d '{"payload":{"did":"did:theseries:0x9858EfFD232B4033E47d90003D41EC34EcaEda94","pubKeys":[{"id":"#keys-1","type":"Secp256k1","publicKeyHex":"37b0bb7a8288d38ed49a524b5dc98cff3eb5ca824c9f9dc0dfdb3d9cd600f299a6179912b7451c09896c4098eca7ce6b2e58330672795e847c4d6af44e024230"},{"id":"#keys-2","type":"Secp256k1","publicKeyHex":"9fd0991d0222b4e1339c1a1a5b5f6d9f6a96672a3247b638ee6156d9ea877a2f1735e3a9260940e4c2225c344a8cea6c7b6a6057d0eb90a9a875f446c131031d"}],"service":[]},"signature":"1c7796870181c61950486b249a40fec2c00de28fa8aac835bc8bd9055eab579e252d26d981a6f03cad47da55e52b0abf84119ab248dbe17eee9e18ae3175388325"}' https://tsdv.thelog.net/did/v1/revoke
+curl -XDELETE -H "Content-Type: application/json" -d '{"payload":{"did":"did:theseries:0x9858EfFD232B4033E47d90003D41EC34EcaEda94","pubKeys":[{"id":"#keys-1","type":"Secp256k1","publicKeyHex":"37b0bb7a8288d38ed49a524b5dc98cff3eb5ca824c9f9dc0dfdb3d9cd600f299a6179912b7451c09896c4098eca7ce6b2e58330672795e847c4d6af44e024230"},{"id":"#keys-2","type":"Secp256k1","publicKeyHex":"9fd0991d0222b4e1339c1a1a5b5f6d9f6a96672a3247b638ee6156d9ea877a2f1735e3a9260940e4c2225c344a8cea6c7b6a6057d0eb90a9a875f446c131031d"}],"service":[]},"signature":"1c7796870181c61950486b249a40fec2c00de28fa8aac835bc8bd9055eab579e252d26d981a6f03cad47da55e52b0abf84119ab248dbe17eee9e18ae3175388325"}' https://tsdv.thelog.net/did/v1/revoke
 ```
 
 example response
