@@ -8,6 +8,16 @@ DID provides a unique identification to protect the privacy of the sovereign ide
 ## Status Of this document
 This is a draft document
 
+## Target System
+The target system is the Ethereum network where out contract is deployed. This could either be:
+
+    Mainnet
+    Sepolia
+    other EVM-compliant blockchains such as private chains, side-chains, or consortium chains.
+
+An example contract has been deployed to Sepolia testnet `0x47e6334374a7453B5fB22e37838E7B1d1e856BC4` for test purpose. 
+
+
 ## DID Method Definition
 DID is the decentralization of user’s digital identity, whose format is as follows:
 ```
@@ -18,118 +28,81 @@ Method-specific-id is the blockchain address genderated by the public key hash, 
 example:
 ```
 did:theseries:0xedc76A675c4e0e793a3Af2C307FB8dA09bFe3D11
+did:theseries:mainnet:0xedc76A675c4e0e793a3Af2C307FB8dA09bFe3D11
+did:theseries:sepolia:0xedc76A675c4e0e793a3Af2C307FB8dA09bFe3D11
 ```
+Supports Ethereum "mainnet" and "sepolia" currently, can be extended in the future.
+
+
 Algorithm support for key generation:
 - Secp256k1
 - more algorithms in the future
 
 ## DID Document Definition
 
-Base DID Document
+Minimal DID Document example
 ```
 {
-  "@context": "https://www.w3.org/ns/did/v1",
+  "@context":[
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/security/suites/secp256k1recovery-2020/v2"
+  ],
   "id": "did:theseries:0xedc76A675c4e0e793a3Af2C307FB8dA09bFe3D11",
-  "version": 1,
-  "created": "2023-11-12T13:14:15Z",
-  "updated": "2023-11-12T13:14:15Z",
-  "publicKey": [
-    {
-      "id": "#keys-1",
-      "type": "Secp256k1",
-      "publicKeyHex": "61ac6625b791794ba00625eaa5d0c5f9800d941a6e14e4618536f7d75b79d784"
-    },
-    {
-      "id": "#keys-2",
-      "type": "Secp256k1",
-      "publicKeyHex": "2f8eb99b3fd88b1d6de4b8a06cba68581dc2e0dd03e84b3ac1b6a7eacb951817"
-    }
-  ],
-  "authentication": ["#key-1"],
-  "recovery": ["#key-2"],
-  "service": [
-    {
-      "id": "did:theseries:0xedc76A675c4e0e793a3Af2C307FB8dA09bFe3D11#resolver",
-      "type": "DIDResolve",
-      "serviceEndpoint": "https://tsdv.thelog.net/did"
-    }
-  ],
-  "proof": {
-    "type": "Secp256k1",
-    "creator": "did:theseries:0xedc76A675c4e0e793a3Af2C307FB8dA09bFe3D11#keys-1",
-    "signatureValue": "... ..."
-  }
+  "verificationMethod":[{
+    "id": "did:theseries:0xedc76A675c4e0e793a3Af2C307FB8dA09bFe3D11",
+    "controller": "did:theseries:0xedc76A675c4e0e793a3Af2C307FB8dA09bFe3D11",
+    "type": "EcdsaSecp256k1RecoveryMethod2020",
+    "blockchainAccountId":"eip155:1:0xedc76A675c4e0e793a3Af2C307FB8dA09bFe3D11"
+  }],
+  "authentication": [
+    "did:theseries:0xedc76A675c4e0e793a3Af2C307FB8dA09bFe3D11#controller",
+  ]
 }
-
 ```
-
-- #key-1 primary key
-- #key-2 the recovery key
-
 
 
 ## Operations
+
+![simple flow](images/tsid-erc725-seq.svg)
+
+
+
 ### Creation
 As users already have HD wallet accounts, just make use of them.
 use first address of first account as method-specific-id.
 e.g.
-```bash
-curl -XPOST -H "Content-Type: application/json" -d '{"payload":{"did":"did:theseries:0x9858EfFD232B4033E47d90003D41EC34EcaEda94","pubKeys":[{"id":"#keys-1","type":"Secp256k1","publicKeyHex":"37b0bb7a8288d38ed49a524b5dc98cff3eb5ca824c9f9dc0dfdb3d9cd600f299a6179912b7451c09896c4098eca7ce6b2e58330672795e847c4d6af44e024230"},{"id":"#keys-2","type":"Secp256k1","publicKeyHex":"9fd0991d0222b4e1339c1a1a5b5f6d9f6a96672a3247b638ee6156d9ea877a2f1735e3a9260940e4c2225c344a8cea6c7b6a6057d0eb90a9a875f446c131031d"}]},"signature":"1c0aa855f69932fee4a68fddcf689f9c543180db0288402fef50bb903f0ae5f9b5665b67c2272287637354b7d08256f7079bf04c538a49a327f856e90cf0cd6e9b"}' https://tsdv.thelog.net/did/v1/register
+```solidity
+function createID() public returns (address did) {}
 ```
-
-example response
-```json
-{
-    "code": 2000,
-    "message": "OK",
-    "data": "did:theseries:0x9858EfFD232B4033E47d90003D41EC34EcaEda94"
-}
-
-```
+calling createID() should create an ERC725 based smart contract and return contract address.
+(TBD: ERC1056)
 
 ### Read (Resolve)
-```bash
-curl 'https://tsdv.thelog.net/did/v1/resolve?did=did:theseries:0x9858EfFD232B4033E47d90003D41EC34EcaEda94'
+Client should cache ERC725 contract address.
+```solidity
+function getData(bytes32 dataKey) public view returns (bytes memory dataValue) {}
 ```
-returns the corresponding DID document
+Call contract.getData() to fetch data of a given did to make DID Document.
 
-example response
+for any reason client loses cached contract address invoke resolveID() to regain.
 ```
-{"code":2000,"message":"OK","data":{"@context":"https://www.w3.org/ns/did/v1","id":"did:theseries:0x9858EfFD232B4033E47d90003D41EC34EcaEda94","version":1,"created":"2024-01-26T08:13:25Z","updated":"2024-01-26T08:13:25Z","publicKey
-":[{"id":"#keys-1","type":"Secp256k1","publicKeyHex":"37b0bb7a8288d38ed49a524b5dc98cff3eb5ca824c9f9dc0dfdb3d9cd600f299a6179912b7451c09896c4098eca7ce6b2e58330672795e847c4d6af44e024230"},{"id":"#keys-2","type":"Secp256k1","publicKey
-Hex":"9fd0991d0222b4e1339c1a1a5b5f6d9f6a96672a3247b638ee6156d9ea877a2f1735e3a9260940e4c2225c344a8cea6c7b6a6057d0eb90a9a875f446c131031d"}],"authentication":["#key-1"],"recovery":["#key-2"]}}
+function resolveID(address owner) public view returns (address did) {}
 ```
-
 
 ### Update
- Use recovery key to update service info.
-```
-curl -XPUT -H "Content-Type: application/json" -d '{"payload":{"did":"did:theseries:0x9858EfFD232B4033E47d90003D41EC34EcaEda94","pubKeys":[{"id":"#keys-1","type":"Secp256k1","publicKeyHex":"37b0bb7a8288d38ed49a524b5dc98cff3eb5ca824c9f9dc0dfdb3d9cd600f299a6179912b7451c09896c4098eca7ce6b2e58330672795e847c4d6af44e024230"},{"id":"#keys-2","type":"Secp256k1","publicKeyHex":"9fd0991d0222b4e1339c1a1a5b5f6d9f6a96672a3247b638ee6156d9ea877a2f1735e3a9260940e4c2225c344a8cea6c7b6a6057d0eb90a9a875f446c131031d"}],"service":[]},"signature":"1c7796870181c61950486b249a40fec2c00de28fa8aac835bc8bd9055eab579e252d26d981a6f03cad47da55e52b0abf84119ab248dbe17eee9e18ae3175388325"}' https://tsdv.thelog.net/did/v1/update
+Call contract.setData() to update DID data.
+```solidity
+function setData(dataKey, dataValue) public onlyOwner {}
 ```
 
-example response
-```
-{
-    "code": 2000,
-    "message": "OK",
-    "data": "updated"
-}
-```
 
 ### Delete(Revoke)
- Use recovery key to revoke a did.
+Owner can call revoke() to revoke DID.
+```solidity
+function revoke() public onlyOwner {}
 ```
-curl -XDELETE -H "Content-Type: application/json" -d '{"payload":{"did":"did:theseries:0x9858EfFD232B4033E47d90003D41EC34EcaEda94","pubKeys":[{"id":"#keys-1","type":"Secp256k1","publicKeyHex":"37b0bb7a8288d38ed49a524b5dc98cff3eb5ca824c9f9dc0dfdb3d9cd600f299a6179912b7451c09896c4098eca7ce6b2e58330672795e847c4d6af44e024230"},{"id":"#keys-2","type":"Secp256k1","publicKeyHex":"9fd0991d0222b4e1339c1a1a5b5f6d9f6a96672a3247b638ee6156d9ea877a2f1735e3a9260940e4c2225c344a8cea6c7b6a6057d0eb90a9a875f446c131031d"}],"service":[]},"signature":"1c7796870181c61950486b249a40fec2c00de28fa8aac835bc8bd9055eab579e252d26d981a6f03cad47da55e52b0abf84119ab248dbe17eee9e18ae3175388325"}' https://tsdv.thelog.net/did/v1/revoke
-```
+Should update all data to empty and set owner to address 0x0.
 
-example response
-```
-{
-    "code": 2000,
-    "message": "OK",
-    "data": "revoked"
-}
-```
 
 ## Privacy and Security considerations
 ### Privacy Considerations
@@ -148,6 +121,9 @@ VCs.
 
 
 ## References
-[ECDSA Secp256k1 Signature 2019](https://w3c-ccg.github.io/lds-ecdsa-secp256k1-2019/). O. Steele. W3C. April 2019
 
+- https://www.w3.org/TR/did-core/
 
+- [ERC725](https://github.com/ethereum/EIPs/issues/725)
+
+- [EIP155](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md)
